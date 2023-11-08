@@ -20,7 +20,7 @@ public class VacancyService {
     static {
         try {
             VIEWED_VACANCIES_IDS = DataUtils.readDataFromFile(PATH_TO_VIEWED_VACANCIES_IDS);
-            BLACK_LIST = DataUtils.readDataFromFile(PATH_TO_BLACK_LIST);
+            BLACK_LIST           = DataUtils.readDataFromFile(PATH_TO_BLACK_LIST);
         } catch (IOException ex) { throw new RuntimeException(ex); }
     }
 
@@ -58,7 +58,7 @@ public class VacancyService {
                     !vacancy.contains(WORK_EXPERIENCE_SECOND_OPTION)) {
                 vacancy = vacancy.toLowerCase().substring(0, vacancy.indexOf(VACANCY_NINTH_PART));
                 if (isPostBlacklist(vacancy) && !isVacancyBeenViewed(vacancy)) {
-                    String url = vacancy.substring(0, vacancy.indexOf(COLON));
+                    String url  = vacancy.substring(0, vacancy.indexOf(COLON));
                     String post = vacancy.substring(vacancy.indexOf(COLON) + 1);
                     vacancies.add(post.concat(url));
                 }
@@ -72,27 +72,31 @@ public class VacancyService {
     private static String[] get(final String url, final String location) { // O(1)
         StringBuilder vacanciesOnPages = new StringBuilder();
         for (int i = 0; i < 100; i++) {
-            Connection.Response response;
             try {
-                response = Jsoup.connect(url + AMPERSAND + location + PAGE_NUMBER + i).ignoreContentType(true).execute();
+                Connection.Response response = Jsoup
+                        .connect(url + AMPERSAND + location + PAGE_NUMBER + i)
+                        .ignoreContentType(true)
+                        .execute();
+                vacanciesOnPages.append(response.body()
+                        .replace(ITEMS, EMPTY)
+                        .replace(OPENING_CURLY_BRACE,  EMPTY)
+                        .replace(CLOSING_CURLY_BRACE,  EMPTY)
+                        .replace(VACANCY_FIRST_PART,   EMPTY)
+                        .replace(VACANCY_SECOND_PART,  VERTICAL_LINE + URL_PART)
+                        .replace(VACANCY_THIRD_PART,   COLON)
+                        .replace(VACANCY_FOURTH_PART,  COLON)
+                        .replace(VACANCY_FIFTH_PART,   TILDA)
+                        .replace(VACANCY_SIXTH_PART,   TILDA)
+                        .replace(VACANCY_SEVENTH_PART, TILDA)
+                        .split(VACANCY_EIGHTH_PART)[0]);
             } catch (IOException ex) { throw new RuntimeException(ex); }
-            vacanciesOnPages.append(response.body()
-                    .replace(ITEMS, EMPTY)
-                    .replace(OPENING_CURLY_BRACE,  EMPTY)
-                    .replace(CLOSING_CURLY_BRACE,  EMPTY)
-                    .replace(VACANCY_FIRST_PART,   EMPTY)
-                    .replace(VACANCY_SECOND_PART,  VERTICAL_LINE + URL_PART)
-                    .replace(VACANCY_THIRD_PART,   COLON)
-                    .replace(VACANCY_FOURTH_PART,  COLON)
-                    .replace(VACANCY_FIFTH_PART,   TILDA)
-                    .replace(VACANCY_SIXTH_PART,   TILDA)
-                    .replace(VACANCY_SEVENTH_PART, TILDA)
-                    .split(VACANCY_EIGHTH_PART)[0]);
             if (i == 49) {
                 try { Thread.sleep(PAUSE_IN_MILLISECONDS); } catch (InterruptedException ex) { throw new RuntimeException(ex); }
             }
         }
-        return vacanciesOnPages.toString().split(TILDA);
+        return vacanciesOnPages
+                .toString()
+                .split(TILDA);
     }
 
     private static boolean isPostBlacklist(final String vacancy) { // O(1)

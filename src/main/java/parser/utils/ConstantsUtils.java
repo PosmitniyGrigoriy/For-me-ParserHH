@@ -1,6 +1,6 @@
 package parser.utils;
 
-import java.time.LocalTime;
+import static parser.utils.DataUtils.CURRENT_TIME;
 
 public class ConstantsUtils {
 
@@ -10,7 +10,6 @@ public class ConstantsUtils {
     public static final String URL         = "https://api.hh.ru/vacancies/?text=java&search_field=company_name&search_field=description&search_field=name&order_by=publication_time";
     public static final String PAGE_NUMBER = "&page=";
 
-    public static final String CURRENT_TIME     = LocalTime.now().toString().substring(0, 5);
     public static final String STARTING_MESSAGE = "\nНачался сбор вакансий в " + CURRENT_TIME + ". Завершение через 6 минут.\n";
 
     public static final String FIRST_LOCATION   = "schedule=remote&";
